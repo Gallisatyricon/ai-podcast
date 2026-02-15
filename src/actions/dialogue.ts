@@ -63,7 +63,7 @@ export async function createDialogue(
         modelId: request.modelId || 'eleven_v3',
         languageCode: 'fr',
         settings: {
-          stability: 0.3,
+          stability: 0.5,
         },
         ...(request.seed && { seed: request.seed }),
       };

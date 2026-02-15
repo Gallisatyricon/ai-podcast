@@ -99,6 +99,7 @@ STRUCTURE :
 
 ANNOTATIONS VOCALES (tags ElevenLabs v3, en anglais, obligatoire) :
 - Utiliser avec parcimonie : [laughs], [thoughtful], [excited], [sighs], [pauses], [whispers]
+- Placer les tags là où l'émotion survient naturellement dans la phrase — en début, au milieu, ou entre deux phrases. Varier les positions. Ne PAS les regrouper tous en fin de réplique.
 - Utiliser "—" pour les interruptions naturelles et les hésitations
 
 ${styleInstructions[podcastStyle]}`,
