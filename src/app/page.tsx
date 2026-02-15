@@ -264,7 +264,6 @@ export default function Home() {
     setIsPlaying(false);
     try { el.pause(); } catch {}
     el.currentTime = 0;
-    el.playbackRate = 1.15;
     try { el.load(); } catch {}
   }, [audioUrl]);
 

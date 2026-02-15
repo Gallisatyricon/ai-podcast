@@ -64,6 +64,7 @@ export async function createDialogue(
         languageCode: 'fr',
         settings: {
           stability: 0.0,
+          speed: 1.15,
         },
         ...(request.seed && { seed: request.seed }),
       };
