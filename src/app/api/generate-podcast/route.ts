@@ -11,12 +11,12 @@ const podcastSchema = z.object({
         text: z
           .string()
           .describe(
-            "The text spoken by this speaker, including natural speech patterns and nuances like [laughs], [pauses], [excited], etc."
+            "Le texte prononcé par ce speaker, en français, incluant des annotations vocales ElevenLabs v3 comme [laughs], [thoughtful], [excited], [sighs], [whispers], [pauses]"
           ),
       })
     )
     .describe(
-      "A natural podcast conversation between two speakers discussing the content"
+      "Une conversation de podcast naturelle en français entre deux esprits brillants explorant le contenu"
     ),
 });
 
@@ -79,7 +79,7 @@ STRUCTURE NARRATIVE :
 STYLE :
 - Français naturel et élégant, ni familier ni académique
 - Humour discret et intelligent, jamais forcé
-- Annotations naturelles : [pensif], [s'anime], [sourire], [moment de silence], [frappe la table]
+- Annotations vocales (tags ElevenLabs v3 en anglais, obligatoire) : [thoughtful], [excited], [laughs], [sighs], [pauses], [whispers], [surprised], [hesitates], [curious]
 - Utiliser "—" (tiret cadratin) pour les interruptions naturelles et les pensées qui se chevauchent
 - Formulations comme : "C'est là que ça devient fascinant...", "Attends, reprenons—", "Il y a quelque chose de presque poétique là-dedans...", "Ce qui me frappe, c'est que derrière cette question technique, il y a une vraie question philosophique"
 

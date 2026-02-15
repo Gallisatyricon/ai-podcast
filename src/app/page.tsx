@@ -20,8 +20,8 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const voices = useMemo(() => [
-    { id: 'exsUS4vynmxd379XN4yO', name: 'Sophie' },
-    { id: 'NNl6r8mD7vthiJatiJt1', name: 'Marc' },
+    { id: 'WQKwBV2Uzw1gSGr69N8I', name: 'Sophie' },
+    { id: 'cTNP6ZM2mLTKj2BFhxEh', name: 'Marc' },
   ], []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -191,10 +191,10 @@ export default function Home() {
     const doneStatus: StepStatus = hasAudio ? 'complete' : 'pending';
 
     return [
-      { key: 'scrape', label: 'Scrape Source', status: scrapeStatus as StepStatus },
-      { key: 'conversation', label: 'Generate Conversation', status: convoStatus as StepStatus },
-      { key: 'audio', label: 'Generate Audio', status: audioStatus as StepStatus },
-      { key: 'done', label: 'Ready', status: doneStatus as StepStatus },
+      { key: 'scrape', label: 'Extraction', status: scrapeStatus as StepStatus },
+      { key: 'conversation', label: 'Conversation', status: convoStatus as StepStatus },
+      { key: 'audio', label: 'Synthèse audio', status: audioStatus as StepStatus },
+      { key: 'done', label: 'Prêt', status: doneStatus as StepStatus },
     ];
   }, [scrapedContent, conversation, isConversationComplete, isGeneratingAudio, audioUrl, isLoading]);
 
@@ -202,16 +202,16 @@ export default function Home() {
     const inProgress = steps.find((s) => s.status === 'in_progress');
     if (inProgress) {
       if (inProgress.key === 'conversation') {
-        return `Streaming conversation (${conversationTurns} turns)`;
+        return `Génération en cours (${conversationTurns} échanges)`;
       }
       if (inProgress.key === 'audio') {
-        return 'Calling TTS and composing audio';
+        return 'Synthèse vocale en cours';
       }
       return inProgress.label;
     }
-    if (audioUrl) return isPlaying ? 'Playing podcast' : 'Podcast ready';
-    if (isLoading) return 'Starting…';
-    return 'Awaiting URL';
+    if (audioUrl) return isPlaying ? 'Lecture en cours' : 'Podcast prêt';
+    if (isLoading) return 'Démarrage…';
+    return 'En attente d\'une URL';
   }, [steps, audioUrl, isLoading, conversationTurns, isPlaying]);
 
   const nextSteps = useMemo(() => {
@@ -306,18 +306,18 @@ export default function Home() {
 
       <div className="relative max-w-7xl mx-auto w-full">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-rose-500">AI Podcast Generator</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-rose-500">Générateur de Podcast IA</span>
         </h1>
 
         {/* Agentic progress header */}
         <div className="mb-6 rounded-xl border border-white/30 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-lg p-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-700 dark:text-gray-300">
-              <span className="font-semibold">Agent status:</span> {currentAction}
+              <span className="font-semibold">Statut :</span> {currentAction}
             </div>
             {nextSteps.length > 0 && (
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                Next: {nextSteps.join(' -> ')}
+                Suivant : {nextSteps.join(' → ')}
               </div>
             )}
           </div>
@@ -348,7 +348,7 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Source</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                URL to convert
+                URL à convertir
               </label>
               <input
                 type="url"
@@ -367,12 +367,12 @@ export default function Home() {
                 {isLoading && (
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                 )}
-                {isLoading ? 'Generating Conversation…' : 'Generate Conversation'}
+                {isLoading ? 'Génération en cours…' : 'Générer le podcast'}
               </button>
             </form>
 
             <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Scraped Preview</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Aperçu du contenu</h3>
               {scrapedContent ? (
                 <div className="bg-white/60 dark:bg-white/5 p-3 rounded border border-white/40 dark:border-white/10 backdrop-blur">
                   <div className="text-sm font-medium text-gray-900 dark:text-white mb-1 truncate">
@@ -383,7 +383,7 @@ export default function Home() {
                   </p>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500 dark:text-gray-400">No source loaded yet.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Aucune source chargée.</p>
               )}
             </div>
           </div>
@@ -393,7 +393,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Conversation</h2>
               {!isConversationComplete && conversation && (
-                <span className="text-xs text-blue-600 dark:text-blue-400">Streaming…</span>
+                <span className="text-xs text-blue-600 dark:text-blue-400">En cours…</span>
               )}
             </div>
             <div className="bg-white/40 dark:bg-white/5 rounded p-4 space-y-3 flex-1 min-h-[240px] max-h-[520px] overflow-y-auto border border-white/30 dark:border-white/10 backdrop-blur">
@@ -413,7 +413,7 @@ export default function Home() {
                   );
                 })
               ) : (
-                <div className="text-sm text-gray-500 dark:text-gray-400">No conversation yet. Generate to start streaming.</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Aucune conversation. Entrez une URL pour commencer.</div>
               )}
             </div>
           </div>
@@ -421,13 +421,13 @@ export default function Home() {
           {/* Right: Audio + Agent details */}
           <div className="lg:col-span-3 flex flex-col gap-4">
             <div className="rounded-xl border border-white/30 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-lg p-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Audio</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Écoute</h2>
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                 {isConversationComplete && !audioUrl && (
-                  <span>Generating audio from {conversationTurns} turns…</span>
+                  <span>Synthèse audio en cours ({conversationTurns} échanges)…</span>
                 )}
                 {!isConversationComplete && (
-                  <span>Waiting for conversation to finish…</span>
+                  <span>En attente de la conversation…</span>
                 )}
               </div>
               {audioUrl ? (
@@ -470,17 +470,17 @@ export default function Home() {
                   {isGeneratingAudio ? (
                     <div className="flex items-center gap-2">
                       <span className="inline-block h-3 w-3 rounded-full bg-blue-500 animate-pulse" />
-                      <span>Generating audio…</span>
+                      <span>Synthèse en cours…</span>
                     </div>
                   ) : (
-                    <span>No audio yet.</span>
+                    <span>Pas encore d&apos;audio.</span>
                   )}
                 </div>
               )}
             </div>
 
             <div className="rounded-xl border border-white/30 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-lg p-4">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Voices</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Voix</h3>
               <div className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
                 <div>
                   <span className="font-medium text-blue-600 dark:text-blue-400">Speaker 1:</span> {voices[0].name}
