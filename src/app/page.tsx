@@ -20,8 +20,8 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const voices = useMemo(() => [
-    { id: 'exsUS4vynmxd379XN4yO', name: 'Blondie' },
-    { id: 'NNl6r8mD7vthiJatiJt1', name: 'Bradford' },
+    { id: 'exsUS4vynmxd379XN4yO', name: 'Sophie' },
+    { id: 'NNl6r8mD7vthiJatiJt1', name: 'Marc' },
   ], []);
 
   const handleSubmit = async (e: React.FormEvent) => {

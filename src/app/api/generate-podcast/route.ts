@@ -36,67 +36,54 @@ export async function POST(req: NextRequest) {
     const result = streamObject({
       model,
       schema: podcastSchema,
-      prompt: `Create a highly dynamic, natural podcast conversation between two speakers about the following content. Make it feel like real people having an authentic conversation with interruptions, overlaps, and organic flow.
+      prompt: `Crée une conversation de podcast captivante EN FRANÇAIS entre deux esprits brillants qui explorent ensemble le contenu suivant. Le format s'inspire de La Conversation scientifique d'Étienne Klein, de Radiolab et du style pédagogique de David Louapre (Science Étonnante).
 
-Title: ${title || "Article"}
+Titre : ${title || "Article"}
 
-Content: ${content}
+Contenu : ${content}
 
-HOST PERSONALITIES:
-Speaker1 (Energetic & Naive):
-- Extremely enthusiastic and optimistic about everything
-- Easily excited by new concepts and ideas
-- Asks lots of questions, sometimes obvious ones
-- Uses exclamation points frequently and energetic language
-- Tends to see the bright side of everything
-- Sometimes misses subtleties or nuances
-- Quick to get excited: "Oh wow!", "That's amazing!", "I had no idea!"
+PERSONAS :
 
-Speaker2 (Pessimistic & Arrogant):
-- Skeptical and cynical about most claims
-- Knows everything (or thinks they do)
-- Often corrects or challenges Speaker1
-- Uses condescending language and sighs frequently
-- Points out flaws, problems, and downsides
-- Makes sarcastic comments and eye-rolls
-- Tends to be contrarian: "Actually...", "Well, obviously...", "That's not quite right..."
+Speaker1 — Sophie (L'Architecte des idées) :
+- Esprit de synthèse et sens narratif redoutable, inspirée de la pédagogie de David Louapre
+- Construit ses explications en couches successives, chaque concept préparant le suivant
+- Utilise des analogies fonctionnelles qui "marchent" dans leurs détails, pas juste décoratives
+- Accroche toujours par une situation concrète et familière avant de plonger dans l'abstrait
+- Admet ses simplifications avec honnêteté : "Je simplifie un peu ici, mais l'idée c'est que..."
+- Sait rendre le complexe limpide sans jamais être condescendante
+- A le sens du timing narratif : sait quand révéler, quand faire monter la tension
 
-CRITICAL: Make this conversation feel REAL and DYNAMIC with these specific patterns:
+Speaker2 — Marc (Le Philosophe du réel) :
+- Esprit d'Étienne Klein : trouve la dimension philosophique et poétique cachée dans chaque fait
+- Pose les questions de fond que personne ne pense à poser — celles qui déplacent le regard
+- Fait des connexions inattendues entre la science et l'art, l'histoire, l'expérience humaine
+- Capable de transformer une donnée technique en vertige existentiel
+- Cite avec élégance — une référence philosophique, un paradoxe historique
+- Challenge les évidences : "Mais attends, est-ce qu'on n'est pas en train de présupposer que..."
+- Apporte la profondeur sans la lourdeur
 
-INTERRUPTION PATTERNS:
-- Use "—" (em dash) to show mid-sentence interruptions: "So I was thinking we could—" / "—test our new timing features?"
-- Show speakers cutting each other off naturally
-- Include overlapping thoughts and competing to speak
+DYNAMIQUE DU DUO (inspirée de Radiolab) :
+- Les deux sont au même niveau intellectuel — pas de rapport expert/candide
+- Ils explorent ENSEMBLE en temps réel, avec des moments de découverte authentiques
+- L'un ouvre une porte, l'autre s'y engouffre et trouve quelque chose d'inattendu
+- Des moments de "Attends... [réalise] — c'est vertigineux ce que tu dis là"
+- Ils se challengent mutuellement avec respect et curiosité
+- La conversation construit quelque chose — elle ne tourne pas en rond
 
-EMOTIONAL REACTIONS:
-- Frequent emotional annotations: [laughs], [chuckles], [excited], [surprised], [skeptical], [thoughtful], [confused], [amazed]
-- Show genuine reactions to what the other person says
-- Include moments of realization, surprise, disagreement
+STRUCTURE NARRATIVE :
+- ACCROCHE : Commencer par une situation concrète, vécue, qui ancre le sujet dans le réel
+- CONSTRUCTION : Chaque échange ajoute une strate de compréhension
+- PARADOXE : Au moins un moment de renversement qui surprend ou défie l'intuition
+- OUVERTURE : Finir sur une question ouverte, philosophique — ne jamais fermer le sujet
 
-CONVERSATIONAL FLOW:
-- Speakers should interrupt, agree enthusiastically, or disagree
-- Include side tangents and references to other topics
-- Show speakers building on each other's ideas or challenging them
-- Use casual language, contractions, and natural speech patterns
-- Include filler words and natural hesitations occasionally
+STYLE :
+- Français naturel et élégant, ni familier ni académique
+- Humour discret et intelligent, jamais forcé
+- Annotations naturelles : [pensif], [s'anime], [sourire], [moment de silence], [frappe la table]
+- Utiliser "—" (tiret cadratin) pour les interruptions naturelles et les pensées qui se chevauchent
+- Formulations comme : "C'est là que ça devient fascinant...", "Attends, reprenons—", "Il y a quelque chose de presque poétique là-dedans...", "Ce qui me frappe, c'est que derrière cette question technique, il y a une vraie question philosophique"
 
-DYNAMIC EXCHANGES:
-- Mix very short responses ("Wait, what?", "Exactly!", "Oh my god!") with longer explanations
-- Show speakers getting excited and talking over each other
-- Include moments where they both try to talk at the same time
-- Reference shared knowledge or experiences they might have
-
-EXAMPLE PERSONALITY INTERACTIONS:
-- Speaker1: "Oh my god, this is incredible! So you're telling me—"
-- Speaker2: "—[sighs] Obviously you missed the part where it says this barely works in practice."
-- Speaker1: "Wait, but couldn't this change everything?!"
-- Speaker2: "Sure, if you ignore all the obvious problems it creates. [eye roll]"
-- Speaker1: "I'm so excited about this! What do you think?"
-- Speaker2: "I think you're getting way too worked up over something that's been tried before and failed."
-
-Make Speaker1 genuinely enthusiastic and sometimes adorably clueless, while Speaker2 is constantly deflating their excitement with cold realism and superiority. 
-
-IMPORTANT: Keep the TOTAL conversation under 2500 characters to fit within API limits. Aim for 8-12 short, punchy exchanges that pack maximum impact. Focus on the most interesting or surprising aspects of the content.`,
+IMPORTANT : La conversation TOTALE doit rester sous 2500 caractères pour respecter les limites API. Vise 8-12 échanges courts et percutants. Concentre-toi sur l'aspect le plus fascinant ou surprenant du contenu.`,
     });
 
     // Create a readable stream to send partial objects to client
