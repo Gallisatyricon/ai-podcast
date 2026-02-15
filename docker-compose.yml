@@ -1,0 +1,31 @@
+services:
+  app:
+    # L'image de base : un mini Linux avec Node.js 20 pré-installé
+    image: node:20-alpine
+
+    # Le dossier de travail DANS la boîte
+    working_dir: /app
+
+    volumes:
+      # Synchronise ton dossier projet avec le dossier /app dans la boîte
+      # Tout changement de ton côté est visible dans la boîte, et inversement
+      - .:/app
+
+      # Les dépendances (node_modules) restent DANS la boîte, pas sur ton PC
+      - node_modules:/app/node_modules
+
+    ports:
+      # Redirige le port 3000 de la boîte vers ton navigateur
+      # Tu pourras ouvrir http://localhost:3000 comme d'habitude
+      - "3000:3000"
+
+    # Charge tes clés API depuis le fichier .env.local
+    env_file:
+      - .env.local
+
+    # La commande lancée au démarrage : installe les dépendances puis lance l'app
+    command: sh -c "npm install && npm run dev"
+
+# Stockage isolé pour node_modules (reste dans Docker, pas sur ton PC)
+volumes:
+  node_modules:
