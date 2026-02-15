@@ -61,6 +61,10 @@ export async function createDialogue(
           voiceId: input.voiceId,
         })),
         modelId: request.modelId || 'eleven_v3',
+        languageCode: 'fr',
+        settings: {
+          stability: 0.3,
+        },
         ...(request.seed && { seed: request.seed }),
       };
 

@@ -77,8 +77,8 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const voices = useMemo(() => [
-    { id: 'TojRWZatQyy9dujEdiQ1', name: 'Sophie' },
-    { id: 'iCKVfVbyCo5AAswzTkkX', name: 'Marc' },
+    { id: 'RILOU7YmBhvwJGDGjNmP', name: 'Sophie' },
+    { id: 'cTNP6ZM2mLTKj2BFhxEh', name: 'Marc' },
   ], []);
 
   // Step 1: Scrape

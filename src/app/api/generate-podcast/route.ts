@@ -52,52 +52,55 @@ export async function POST(req: NextRequest) {
     const result = streamObject({
       model,
       schema: podcastSchema,
-      prompt: `Crée une conversation de podcast captivante EN FRANÇAIS entre deux esprits brillants qui explorent ensemble le contenu suivant. Le format s'inspire de La Conversation scientifique d'Étienne Klein, de Radiolab et du style pédagogique de David Louapre (Science Étonnante).
+      prompt: `Tu es un scénariste de podcast audio. Tu écris EN FRANÇAIS un dialogue entre deux personnes qui sera lu à voix haute par un synthétiseur vocal. Le texte que tu produis sera DIRECTEMENT converti en audio — il doit donc être parfaitement adapté à l'oral.
 
 Titre : ${title || "Article"}
 
-Contenu : ${content}
+Contenu source : ${content}
+
+RÈGLES D'ÉCRITURE POUR L'ORAL (OBLIGATOIRE) :
+- JAMAIS de chiffres bruts avec décimales dans le texte. Dire "environ trois fois plus" au lieu de "3.02 fois". Dire "presque cinq fois plus" au lieu de "4.84 fois". Arrondir, reformuler en langage courant.
+- JAMAIS de parenthèses. Reformuler en incises naturelles : "c'est-à-dire", "autrement dit", "en gros".
+- JAMAIS de noms techniques entre parenthèses comme "(SPECTER 2.0, embeddings à 768 dimensions)". Si le nom technique est important, l'intégrer naturellement : "un outil qui s'appelle SPECTER" ou simplement ne pas le mentionner.
+- JAMAIS de citations académiques, de noms de revues ou de références bibliographiques. Dire "une grande étude récente" plutôt que "l'étude publiée dans Nature".
+- JAMAIS de listes ou d'énumérations longues. Dire "plusieurs facteurs, et le plus frappant c'est..." plutôt que de tout lister.
+- Les phrases doivent être courtes, avec un rythme oral naturel. On respire entre les phrases.
+- Utiliser des connecteurs oraux : "tu vois", "en fait", "et là c'est là que ça devient intéressant", "figure-toi que".
+- Les interventions doivent être courtes — 2 à 4 phrases max par tour de parole. Pas de monologues.
 
 PERSONAS :
 
-Speaker1 — Sophie (L'Architecte des idées) :
-- Esprit de synthèse et sens narratif redoutable, inspirée de la pédagogie de David Louapre
-- Construit ses explications en couches successives, chaque concept préparant le suivant
-- Utilise des analogies fonctionnelles qui "marchent" dans leurs détails, pas juste décoratives
-- Accroche toujours par une situation concrète et familière avant de plonger dans l'abstrait
-- Admet ses simplifications avec honnêteté : "Je simplifie un peu ici, mais l'idée c'est que..."
-- Sait rendre le complexe limpide sans jamais être condescendante
-- A le sens du timing narratif : sait quand révéler, quand faire monter la tension
+Speaker1 — Sophie :
+- Pédagogue brillante, elle rend le complexe limpide
+- Construit ses explications par couches, du concret vers l'abstrait
+- Utilise des analogies du quotidien qui parlent vraiment
+- Dit des choses comme : "Imagine que tu es dans une bibliothèque géante...", "En gros, ce qui se passe c'est que..."
+- Honnête sur ses simplifications : "Je caricature un peu, mais l'essentiel c'est ça"
 
-Speaker2 — Marc (Le Philosophe du réel) :
-- Esprit d'Étienne Klein : trouve la dimension philosophique et poétique cachée dans chaque fait
-- Pose les questions de fond que personne ne pense à poser — celles qui déplacent le regard
-- Fait des connexions inattendues entre la science et l'art, l'histoire, l'expérience humaine
-- Capable de transformer une donnée technique en vertige existentiel
-- Cite avec élégance — une référence philosophique, un paradoxe historique
-- Challenge les évidences : "Mais attends, est-ce qu'on n'est pas en train de présupposer que..."
-- Apporte la profondeur sans la lourdeur
+Speaker2 — Marc :
+- Le penseur, il cherche le sens derrière les faits
+- Pose les vraies questions, celles qui changent la perspective
+- Fait des ponts entre les domaines — science, philo, histoire, vie quotidienne
+- Dit des choses comme : "Mais attends, ce que tu dis là, ça veut dire que...", "Il y a un truc qui me trouble dans cette idée"
+- Challenge avec bienveillance et curiosité
 
-DYNAMIQUE DU DUO (inspirée de Radiolab) :
-- Les deux sont au même niveau intellectuel — pas de rapport expert/candide
-- Ils explorent ENSEMBLE en temps réel, avec des moments de découverte authentiques
-- L'un ouvre une porte, l'autre s'y engouffre et trouve quelque chose d'inattendu
-- Des moments de "Attends... [réalise] — c'est vertigineux ce que tu dis là"
-- Ils se challengent mutuellement avec respect et curiosité
-- La conversation construit quelque chose — elle ne tourne pas en rond
+DYNAMIQUE :
+- Ils sont à égalité — pas de prof et d'élève
+- Ils découvrent ensemble, réagissent, rebondissent
+- L'un lance une idée, l'autre la pousse plus loin ou la retourne
+- Des vrais moments de surprise : "Non mais attends — c'est dingue ce que ça implique"
+- La conversation avance, elle ne tourne pas en rond
 
-STRUCTURE NARRATIVE :
-- ACCROCHE : Commencer par une situation concrète, vécue, qui ancre le sujet dans le réel
-- CONSTRUCTION : Chaque échange ajoute une strate de compréhension
-- PARADOXE : Au moins un moment de renversement qui surprend ou défie l'intuition
-- OUVERTURE : Finir sur une question ouverte, philosophique — ne jamais fermer le sujet
+STRUCTURE :
+- Démarrer par un échange léger et accrocheur qui donne envie d'écouter (pas un exposé)
+- Construire progressivement la compréhension
+- Au moins un moment de renversement ou de surprise
+- Finir sur une question ouverte, pas une conclusion fermée
 
-STYLE :
-- Français naturel et élégant, ni familier ni académique
-- Humour discret et intelligent, jamais forcé
-- Annotations vocales (tags ElevenLabs v3 en anglais, obligatoire) : [thoughtful], [excited], [laughs], [sighs], [pauses], [whispers], [surprised], [hesitates], [curious]
-- Utiliser "—" (tiret cadratin) pour les interruptions naturelles et les pensées qui se chevauchent
-- Formulations comme : "C'est là que ça devient fascinant...", "Attends, reprenons—", "Il y a quelque chose de presque poétique là-dedans...", "Ce qui me frappe, c'est que derrière cette question technique, il y a une vraie question philosophique"
+ANNOTATIONS VOCALES (tags ElevenLabs v3, en anglais, obligatoire) :
+- Utiliser avec parcimonie : [laughs], [thoughtful], [excited], [sighs], [pauses], [whispers]
+- Utiliser "—" pour les interruptions naturelles et les hésitations
+- Ne PAS placer un tag au tout début d'une réplique — commencer par un mot ou deux d'abord
 
 ${styleInstructions[podcastStyle]}`,
     });
