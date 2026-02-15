@@ -255,7 +255,7 @@ export default function Home() {
   // Character count
   const totalChars = useMemo(() => {
     if (!conversation) return 0;
-    return conversation.reduce((sum, item) => sum + item.text.length, 0);
+    return conversation.reduce((sum, item) => sum + (item.text?.length ?? 0), 0);
   }, [conversation]);
 
   // Progress steps
@@ -434,7 +434,7 @@ export default function Home() {
                             rows={3}
                           />
                         ) : (
-                          <div className="text-sm leading-relaxed whitespace-pre-wrap">{item.text}</div>
+                          <div className="text-sm leading-relaxed whitespace-pre-wrap">{item.text ?? ''}</div>
                         )}
                       </div>
                       {!left && <div className="mt-0.5"><Avatar name={getSpeakerName(item.speaker)} tone="right" /></div>}
