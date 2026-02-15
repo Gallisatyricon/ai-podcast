@@ -78,7 +78,7 @@ export default function Home() {
 
   const voices = useMemo(() => [
     { id: 'RILOU7YmBhvwJGDGjNmP', name: 'Sophie' },
-    { id: 'cTNP6ZM2mLTKj2BFhxEh', name: 'Marc' },
+    { id: '101A8UFM73tcrunWGirw', name: 'Marc' },
   ], []);
 
   // Step 1: Scrape
