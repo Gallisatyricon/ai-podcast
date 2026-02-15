@@ -64,7 +64,8 @@ export async function createDialogue(
         languageCode: 'fr',
         settings: {
           stability: 0.0,
-          speed: 1.15,
+          speed: 1.3,
+          use_speaker_boost: true,
         },
         ...(request.seed && { seed: request.seed }),
       };
