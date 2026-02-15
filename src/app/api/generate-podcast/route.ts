@@ -20,9 +20,17 @@ const podcastSchema = z.object({
     ),
 });
 
+type PodcastStyle = 'short' | 'medium' | 'long';
+
+const styleInstructions: Record<PodcastStyle, string> = {
+  short: `IMPORTANT : La conversation TOTALE doit rester sous 2500 caractères. Vise 8-12 échanges courts et percutants. Concentre-toi sur l'aspect le plus fascinant ou surprenant du contenu. Durée cible : 3-5 minutes.`,
+  medium: `IMPORTANT : La conversation fait environ 6000-8000 caractères. Vise 20-30 échanges. Adopte un style très pédagogique : explique chaque concept clairement, utilise des analogies, vérifie la compréhension. Couvre les aspects principaux du contenu de manière accessible. Durée cible : 10-15 minutes.`,
+  long: `IMPORTANT : Cette conversation est un podcast approfondi de 30-35 minutes. Vise 60-80 échanges pour environ 20000-25000 caractères. Explore le contenu en profondeur sous tous ses angles. Prends le temps de développer chaque idée, de débattre, de faire des digressions intellectuelles riches. Chaque concept mérite d'être décortiqué, contextualisé historiquement et philosophiquement. N'hésite pas à faire des parallèles avec d'autres domaines, à explorer les implications, les controverses et les questions ouvertes.`,
+};
+
 export async function POST(req: NextRequest) {
   try {
-    const { content, title } = await req.json();
+    const { content, title, style = 'short' } = await req.json();
 
     if (!content) {
       return NextResponse.json(
@@ -38,6 +46,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const podcastStyle: PodcastStyle = ['short', 'medium', 'long'].includes(style) ? style : 'short';
     const model = openai("gpt-5-mini");
 
     const result = streamObject({
@@ -90,7 +99,7 @@ STYLE :
 - Utiliser "—" (tiret cadratin) pour les interruptions naturelles et les pensées qui se chevauchent
 - Formulations comme : "C'est là que ça devient fascinant...", "Attends, reprenons—", "Il y a quelque chose de presque poétique là-dedans...", "Ce qui me frappe, c'est que derrière cette question technique, il y a une vraie question philosophique"
 
-IMPORTANT : La conversation TOTALE doit rester sous 2500 caractères pour respecter les limites API. Vise 8-12 échanges courts et percutants. Concentre-toi sur l'aspect le plus fascinant ou surprenant du contenu.`,
+${styleInstructions[podcastStyle]}`,
     });
 
     // Create a readable stream to send partial objects to client

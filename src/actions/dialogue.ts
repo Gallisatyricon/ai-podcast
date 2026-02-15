@@ -14,6 +14,33 @@ export interface CreateDialogueRequest {
   seed?: number;
 }
 
+const CHAR_LIMIT = 2800; // Safe margin under ElevenLabs 3000 char limit
+
+function batchInputs(inputs: DialogueInput[]): DialogueInput[][] {
+  const batches: DialogueInput[][] = [];
+  let current: DialogueInput[] = [];
+  let currentChars = 0;
+
+  for (const input of inputs) {
+    const inputChars = input.text.length;
+
+    if (current.length > 0 && currentChars + inputChars > CHAR_LIMIT) {
+      batches.push(current);
+      current = [];
+      currentChars = 0;
+    }
+
+    current.push(input);
+    currentChars += inputChars;
+  }
+
+  if (current.length > 0) {
+    batches.push(current);
+  }
+
+  return batches;
+}
+
 export async function createDialogue(
   request: CreateDialogueRequest
 ): Promise<Result<{ audioBase64: string; processingTimeMs: number }>> {
@@ -23,25 +50,31 @@ export async function createDialogue(
 
   try {
     const client = clientResult.value;
+    const batches = batchInputs(request.inputs);
 
-    // Prepare the dialogue request according to the API specification
-    const dialogueRequest = {
-      inputs: request.inputs.map((input) => ({
-        text: input.text,
-        voiceId: input.voiceId,
-      })),
-      modelId: request.modelId || 'eleven_v3',
-      ...(request.seed && { seed: request.seed }),
-    };
+    const audioBuffers: Buffer[] = [];
 
-    const stream = await client.textToDialogue.convert(dialogueRequest);
+    for (const batch of batches) {
+      const dialogueRequest = {
+        inputs: batch.map((input) => ({
+          text: input.text,
+          voiceId: input.voiceId,
+        })),
+        modelId: request.modelId || 'eleven_v3',
+        ...(request.seed && { seed: request.seed }),
+      };
 
-    const audioBase64 = await streamToBase64(stream);
+      const stream = await client.textToDialogue.convert(dialogueRequest);
+      const base64 = await streamToBase64(stream);
+      audioBuffers.push(Buffer.from(base64, 'base64'));
+    }
 
+    // Concatenate all audio buffers
+    const combined = Buffer.concat(audioBuffers);
     const processingTimeMs = Math.round(performance.now() - startTime);
 
     return Ok({
-      audioBase64: `data:audio/mpeg;base64,${audioBase64}`,
+      audioBase64: `data:audio/mpeg;base64,${combined.toString('base64')}`,
       processingTimeMs,
     });
   } catch (error) {

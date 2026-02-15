@@ -23,10 +23,11 @@ The application follows a three-stage pipeline:
 ### Key Architectural Components
 
 **Frontend (`src/app/page.tsx`)**
-- Single-page React application with URL input form
-- Manages the complete pipeline state and user interaction
-- Displays scraped content, generated conversation, and final audio
-- Uses two predefined voices: Blondie and Bradford from ElevenLabs
+- Single-page React application with three independent steps: Extract, Generate Dialogue, Generate Audio
+- Each step can be triggered independently — no need to restart from scraping
+- Podcast style selector: short (3-5 min), medium (10-15 min, pedagogical), long (30-35 min, deep)
+- Editable dialogue: each conversation turn can be modified before audio generation
+- Uses two French ElevenLabs voices: Sophie and Marc
 
 **API Routes (`src/app/api/`)**
 - `/api/scrape` - Firecrawl integration for web content extraction (markdown format, main content only)
@@ -35,9 +36,11 @@ The application follows a three-stage pipeline:
 
 **Server Actions (`src/actions/dialogue.ts`)**
 - Handles ElevenLabs dialogue creation with proper error handling
+- Automatic batching: splits long conversations into chunks under 2800 chars for ElevenLabs API compliance
+- Concatenates audio from multiple batches for seamless playback
 - Implements Result pattern for type-safe error handling
 
-**Utilities (`src/utils/elevenlabs.ts`)**
+**Utilities (`src/app/actions/utils.ts`)**
 - ElevenLabs client initialization and configuration
 - Stream processing utilities for audio data conversion
 - Centralized error handling functions
@@ -65,11 +68,15 @@ conversation: z.array(
 )
 ```
 
+**Podcast Styles (selectable by user):**
+- **Short** (3-5 min): ~2500 chars, 8-12 exchanges, focused on most fascinating aspect
+- **Medium** (10-15 min): ~6000-8000 chars, 20-30 exchanges, pedagogical with clear explanations
+- **Long** (30-35 min): ~20000-25000 chars, 60-80 exchanges, deep exploration of all angles
+
 **Conversation Style:**
 - Optimized for dynamic, natural conversations with interruptions and emotional reactions
 - Uses em dashes (—) for mid-sentence interruptions and overlapping dialogue
-- Character limit: under 2500 characters total to fit ElevenLabs API constraints
-- Aims for 8-12 short, punchy exchanges focusing on most interesting content aspects
+- ElevenLabs v3 audio tags: [laughs], [thoughtful], [excited], [sighs], [pauses], [whispers]
 
 ### Environment Variables
 
@@ -95,7 +102,7 @@ The application maps Speaker1 to the first voice and Speaker2 to the second voic
 
 ### Technical Notes
 
-- ElevenLabs dialogue generation has a 3000-character limit; conversations are optimized to stay under 2500 characters
+- ElevenLabs dialogue generation has a 3000-character limit per API call; long conversations are automatically batched
 - The application uses streaming for real-time conversation generation from OpenAI
 - Firecrawl extracts only main content in markdown format for cleaner podcast input
 - Error handling follows functional Result pattern throughout the codebase
