@@ -31,6 +31,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "OPENAI_API_KEY is not configured. Add it to your .env.local file." },
+        { status: 500 }
+      );
+    }
+
     const model = openai("gpt-5-mini");
 
     const result = streamObject({
@@ -111,9 +118,10 @@ IMPORTANT : La conversation TOTALE doit rester sous 2500 caractères pour respec
           controller.close();
         } catch (error) {
           console.error("Streaming error:", error);
-          const errorChunk = JSON.stringify({ 
+          const errorMessage = error instanceof Error ? error.message : 'Unknown streaming error';
+          const errorChunk = JSON.stringify({
             type: 'error',
-            error: 'Failed to generate podcast conversation' 
+            error: errorMessage
           }) + '\n';
           
           controller.enqueue(new TextEncoder().encode(errorChunk));
@@ -130,8 +138,9 @@ IMPORTANT : La conversation TOTALE doit rester sous 2500 caractères pour respec
     });
   } catch (error) {
     console.error("Error generating podcast:", error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: "Failed to generate podcast conversation" },
+      { error: `Failed to generate podcast conversation: ${errorMessage}` },
       { status: 500 }
     );
   }
