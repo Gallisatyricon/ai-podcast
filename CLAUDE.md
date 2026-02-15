@@ -87,9 +87,9 @@ The codebase uses a functional Result pattern:
 
 ### Voice Configuration
 
-Two hardcoded ElevenLabs voices are used:
-- Speaker1: Blondie (`exsUS4vynmxd379XN4yO`)
-- Speaker2: Bradford (`NNl6r8mD7vthiJatiJt1`)
+Two hardcoded French ElevenLabs voices are used:
+- Speaker1: Sophie (`or4EV8aZq78KWcXw48wd`)
+- Speaker2: Marc (`cTNP6ZM2mLTKj2BFhxEh`)
 
 The application maps Speaker1 to the first voice and Speaker2 to the second voice for consistent character assignment in generated podcasts.
 
