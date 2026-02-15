@@ -3,6 +3,48 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DialogueInput } from '@/types';
 
+function audioBufferToWav(buffer: AudioBuffer): Blob {
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const format = 1; // PCM
+  const bitsPerSample = 16;
+  const bytesPerSample = bitsPerSample / 8;
+  const blockAlign = numChannels * bytesPerSample;
+  const dataLength = buffer.length * blockAlign;
+  const headerLength = 44;
+  const arrayBuffer = new ArrayBuffer(headerLength + dataLength);
+  const view = new DataView(arrayBuffer);
+
+  const writeString = (offset: number, str: string) => {
+    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + dataLength, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, format, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * blockAlign, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitsPerSample, true);
+  writeString(36, 'data');
+  view.setUint32(40, dataLength, true);
+
+  let offset = 44;
+  for (let i = 0; i < buffer.length; i++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      const sample = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+      offset += 2;
+    }
+  }
+
+  return new Blob([arrayBuffer], { type: 'audio/wav' });
+}
+
 type PodcastStyle = 'short' | 'medium' | 'long';
 
 const STYLE_OPTIONS: { value: PodcastStyle; label: string; desc: string }[] = [
@@ -35,8 +77,8 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const voices = useMemo(() => [
-    { id: 'or4EV8aZq78KWcXw48wd', name: 'Sophie' },
-    { id: 'cTNP6ZM2mLTKj2BFhxEh', name: 'Marc' },
+    { id: 'TojRWZatQyy9dujEdiQ1', name: 'Sophie' },
+    { id: 'iCKVfVbyCo5AAswzTkkX', name: 'Marc' },
   ], []);
 
   // Step 1: Scrape
@@ -251,6 +293,35 @@ export default function Home() {
       console.error('Audio restart error', e);
     }
   };
+
+  // Download helpers
+  const downloadAs = useCallback(async (format: 'mp3' | 'wav') => {
+    if (!audioUrl) return;
+
+    // Extract base64 data
+    const base64Data = audioUrl.replace(/^data:audio\/\w+;base64,/, '');
+    const rawBytes = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+
+    let blob: Blob;
+    if (format === 'mp3') {
+      blob = new Blob([rawBytes], { type: 'audio/mpeg' });
+    } else {
+      // Convert raw PCM/MP3 bytes to WAV wrapper
+      const audioCtx = new AudioContext();
+      const arrayBuffer = rawBytes.buffer.slice(rawBytes.byteOffset, rawBytes.byteOffset + rawBytes.byteLength);
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+      const wavBlob = audioBufferToWav(audioBuffer);
+      blob = wavBlob;
+      audioCtx.close();
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `podcast-${new Date().toISOString().slice(0, 10)}.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [audioUrl]);
 
   // Character count
   const totalChars = useMemo(() => {
@@ -492,6 +563,21 @@ export default function Home() {
                     onPause={() => setIsPlaying(false)}
                     onEnded={() => setIsPlaying(false)}
                   />
+                  {/* Download buttons */}
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => downloadAs('mp3')}
+                      className="flex-1 bg-gradient-to-r from-gray-700 to-gray-800 text-white py-1.5 px-3 rounded-md text-xs font-medium hover:from-gray-600 hover:to-gray-700 transition-colors shadow"
+                    >
+                      MP3
+                    </button>
+                    <button
+                      onClick={() => downloadAs('wav')}
+                      className="flex-1 bg-gradient-to-r from-gray-700 to-gray-800 text-white py-1.5 px-3 rounded-md text-xs font-medium hover:from-gray-600 hover:to-gray-700 transition-colors shadow"
+                    >
+                      WAV
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="w-full h-24 bg-white/40 dark:bg-white/5 border border-white/30 dark:border-white/10 rounded flex items-center justify-center text-sm text-gray-500 dark:text-gray-400 backdrop-blur">
