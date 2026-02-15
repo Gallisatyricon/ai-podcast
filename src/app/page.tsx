@@ -78,7 +78,7 @@ export default function Home() {
 
   const voices = useMemo(() => [
     { id: 'RILOU7YmBhvwJGDGjNmP', name: 'Sophie' },
-    { id: '101A8UFM73tcrunWGirw', name: 'Marc' },
+    { id: 'NNl6r8mD7vthiJatiJt1', name: 'Marc' },
   ], []);
 
   // Step 1: Scrape
@@ -264,6 +264,7 @@ export default function Home() {
     setIsPlaying(false);
     try { el.pause(); } catch {}
     el.currentTime = 0;
+    el.playbackRate = 1.15;
     try { el.load(); } catch {}
   }, [audioUrl]);
 
